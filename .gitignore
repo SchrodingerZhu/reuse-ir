@@ -1,0 +1,10 @@
+### VSCode ###
+.vscode
+build
+
+### Clion ###
+cmake-build-*
+.idea
+
+### Clangd ###
+.cache
