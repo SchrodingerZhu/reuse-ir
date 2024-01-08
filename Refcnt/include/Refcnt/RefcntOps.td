@@ -56,7 +56,7 @@ def DropOp : Refcnt_Op<"drop"> {
     Example:
 
     ```mlir
-    %1 = refcnt.drop %0 : refcnt.ptr<T> `,` refcnt.token<T>
+    %1 = refcnt.drop %0 : refcnt.rc<T> `,` refcnt.token<T>
     ```
   }];
 
@@ -65,6 +65,26 @@ def DropOp : Refcnt_Op<"drop"> {
 
   let assemblyFormat =
       "$value attr-dict `:` type($value) `,` type($token)"; 
+
+  let hasVerifier = 1;
+}
+
+def NewOp : Refcnt_Op<"new"> {
+  let summary = "Allocate new memory";
+  let description = [{
+    `refcnt.new` allocates a new memory block for a given type.
+
+    Example:
+
+    ```mlir
+    %0 = refcnt.new : refcnt.rc<T>
+    ```
+  }];
+
+  let results = (outs Arg<Refcnt_RcType, "allocation result", []>:$result);
+
+  let assemblyFormat =
+      "attr-dict `:` type($result)"; 
 
   let hasVerifier = 1;
 }
