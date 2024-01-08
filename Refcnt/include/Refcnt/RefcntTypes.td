@@ -23,4 +23,17 @@ def Refcnt_RcType : Refcnt_Type<"Rc", "rc",
   let hasCustomAssemblyFormat = 1;
 }
 
+def Refcnt_TokenType : Refcnt_Type<"Token", "token",
+    [DeclareTypeInterfaceMethods<DataLayoutTypeInterface>]> {
+
+  let summary = "Reuse token type";
+  let description = [{
+    `Refcnt.token` is the type of a memory token.
+  }];
+
+  let parameters = (ins "::mlir::Type":$layout);
+
+  let hasCustomAssemblyFormat = 1;
+}
+
 #endif // REFCNT_TYPES
