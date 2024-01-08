@@ -1,5 +1,11 @@
-project(ReuseIR CXX C)
 cmake_minimum_required(VERSION 3.20)
+project(Refcnt CXX C)
+
+# use lld if clang is used
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  message(STATUS "Using lld as linker")
+  add_link_options("-fuse-ld=lld")
+endif()
 
 find_package(LLVM REQUIRED CONFIG)
 find_package(MLIR REQUIRED CONFIG)
@@ -13,6 +19,7 @@ message(STATUS "Using MLIRConfig.cmake in: ${MLIR_DIR}")
 
 include(${LLVM_DIR}/AddLLVM.cmake)
 include(${LLVM_DIR}/TableGen.cmake)
+include(${LLVM_DIR}/HandleLLVMOptions.cmake)
 include(${MLIR_DIR}/AddMLIR.cmake)
 
 # Set your project compile flags.
@@ -31,19 +38,16 @@ add_definitions(${MLIR_DEFINITIONS_LIST})
 message(STATUS "include dirs for llvm and mlir: ${MLIR_INCLUDE_DIRS};${LLVM_INCLUDE_DIRS}")
 
 # Now build our tools
-add_executable(test src/main.cpp)
+
 
 # Find the libraries that correspond to the LLVM components
 # that we wish to use
-llvm_map_components_to_libnames(LLVM_LIBS support core irreader)
+llvm_map_components_to_libnames(LLVM_LIBS support)
 
-get_property(MLIR_DIALECT_LIBS GLOBAL PROPERTY MLIR_DIALECT_LIBS)
-get_property(MLIR_CONVERSION_LIBS GLOBAL PROPERTY MLIR_CONVERSION_LIBS)
+get_property(MLIR_ALL_LIBS GLOBAL PROPERTY MLIR_ALL_LIBS)
 
-add_subdirectory(include/reuse)
-add_subdirectory(src/reuse)
+add_subdirectory(Refcnt)
 
-target_link_libraries(test MLIRReuse  ${LLVM_LIBS} ${MLIR_DIALECT_LIBS} ${MLIR_CONVERSION_LIBS})
 
 
 
