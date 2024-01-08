@@ -1,6 +1,8 @@
 add_mlir_dialect_library(
     MLIRRefcnt
-        RefcntDialect.cpp
+        RefcntOps.cpp
+        RefcntOpsDialect.cpp
+        RefcntOpsTypes.cpp
     DEPENDS
         MLIRRefcntOpsIncGen
     LINK_COMPONENTS
