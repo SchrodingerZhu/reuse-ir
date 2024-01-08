@@ -13,4 +13,4 @@ target_include_directories(MLIRRefcntTableGen
   INTERFACE
   ${CMAKE_CURRENT_BINARY_DIR}/..
 )
-message(STATUS "Refcnt IR files will be generated : ${CMAKE_CURRENT_BINARY_DIR}")
+message(STATUS "Refcnt IR files will be generated to: ${CMAKE_CURRENT_BINARY_DIR}")

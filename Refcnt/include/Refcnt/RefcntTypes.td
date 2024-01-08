@@ -20,7 +20,7 @@ def Refcnt_RcType : Refcnt_Type<"Rc", "rc",
 
   let parameters = (ins "::mlir::Type":$pointee);
 
-  let hasCustomAssemblyFormat = 1;
+  let assemblyFormat = "`<` $pointee `>`";
 }
 
 def Refcnt_TokenType : Refcnt_Type<"Token", "token",
@@ -33,7 +33,7 @@ def Refcnt_TokenType : Refcnt_Type<"Token", "token",
 
   let parameters = (ins "::mlir::Type":$layout);
 
-  let hasCustomAssemblyFormat = 1;
+  let assemblyFormat = "`<` $layout `>`";
 }
 
 #endif // REFCNT_TYPES

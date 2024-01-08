@@ -17,7 +17,7 @@ def IncOp : Refcnt_Op<"inc"> {
     Example:
 
     ```mlir
-    refcnt.inc %0 : !refcnt.ptr<T>
+    refcnt.inc %0 : refcnt.ptr<T>
     ```
   }];
 
@@ -36,7 +36,7 @@ def DecOp : Refcnt_Op<"dec"> {
     Example:
 
     ```mlir
-    refcnt.dec %0 : !refcnt.ptr<T>
+    refcnt.dec %0 : refcnt.ptr<T>
     ```
   }];
 
@@ -56,7 +56,7 @@ def DropOp : Refcnt_Op<"drop"> {
     Example:
 
     ```mlir
-    %1 = refcnt.drop %0 : !refcnt.ptr<T> `,` !refcnt.token<T>
+    %1 = refcnt.drop %0 : refcnt.ptr<T> `,` refcnt.token<T>
     ```
   }];
 

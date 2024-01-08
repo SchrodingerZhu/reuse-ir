@@ -14,6 +14,7 @@ def Refcnt_Dialect : Dialect {
   }];
   let dependentDialects = [];
   let hasConstantMaterializer = 1;
+  let useDefaultTypePrinterParser = 1;
 }
 
 #endif // REFCNT_DIALECT
