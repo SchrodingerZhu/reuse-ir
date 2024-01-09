@@ -58,13 +58,13 @@ def GetTagOp : Lean_Op<"get_tag"> {
 def ProjOp : Lean_Op<"proj"> {
   let summary = "project a field of a Lean object";
   let description = [{
-        `lean.proj` project a field of a Lean object.
-        The object must be a RC pointer to a Lean object.
+    `lean.proj` project a field of a Lean object.
+    The object must be a RC pointer to a Lean object.
     
-        ```mlir
-        lean.proj %obj : refcnt.rc<Obj<A, B>>, refcnt.rc<Obj<C, D>>, 0 : index
-        ```
-   }];
+    ```mlir
+    lean.proj %obj : refcnt.rc<Obj<A, B>>, refcnt.rc<Obj<C, D>>, 0 : index
+    ```
+  }];
   let arguments = (
      ins Arg<Refcnt_RcType, "the RC pointer to the Lean object", []>:$object,
      Builtin_IntegerAttr:$field
