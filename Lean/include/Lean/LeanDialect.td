@@ -14,6 +14,11 @@ def Lean_Dialect : Dialect {
       ["::mlir::refcnt::RefcntDialect", "::mlir::BuiltinDialect"];
   
   let useDefaultTypePrinterParser = 1;
+  let extraClassDeclaration = [{
+    private:
+      void addTypesImpl();
+      void addOpsImpl();
+  }];
   //let hasConstantMaterializer = 1;
   //let useDefaultAttributePrinterParser = 1;
 }

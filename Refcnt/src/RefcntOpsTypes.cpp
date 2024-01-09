@@ -20,6 +20,28 @@
 #include "Refcnt/RefcntOpsTypes.cpp.inc"
 
 namespace mlir::refcnt {
+#define LAYOUT_AS_INDEX_TYPE(TYPE)                                             \
+  unsigned TYPE::getTypeSizeInBits(                                            \
+      const ::mlir::DataLayout &dataLayout,                                    \
+      [[maybe_unused]] ::mlir::DataLayoutEntryListRef params) const {          \
+    return dataLayout.getTypeSizeInBits(::mlir::IndexType::get(getContext())); \
+  }                                                                            \
+  unsigned TYPE::getABIAlignment(                                              \
+      const ::mlir::DataLayout &dataLayout,                                    \
+      [[maybe_unused]] ::mlir::DataLayoutEntryListRef params) const {          \
+    return dataLayout.getTypeABIAlignment(                                     \
+        ::mlir::IndexType::get(getContext()));                                 \
+  }                                                                            \
+  unsigned TYPE::getPreferredAlignment(                                        \
+      const ::mlir::DataLayout &dataLayout,                                    \
+      [[maybe_unused]] ::mlir::DataLayoutEntryListRef params) const {          \
+    return dataLayout.getTypePreferredAlignment(                               \
+        ::mlir::IndexType::get(getContext()));                                 \
+  }
+
+LAYOUT_AS_INDEX_TYPE(RcType)
+LAYOUT_AS_INDEX_TYPE(TokenType)
+
 void RefcntDialect::addTypesImpl() {
   addTypes<
 #define GET_TYPEDEF_LIST

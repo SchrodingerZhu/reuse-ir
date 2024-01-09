@@ -2,6 +2,7 @@
 #include <mlir/Support/LogicalResult.h>
 
 #include "Lean/LeanOps.h"
+#include "Lean/LeanOpsDialect.h"
 #include "Lean/LeanOpsTypes.h"
 
 #define GET_OP_CLASSES
@@ -85,5 +86,11 @@ LogicalResult SProjOp::verify() {
 
   inflightErr.abandon();
   return success();
+}
+void LeanDialect::addOpsImpl() {
+  addOperations<
+#define GET_OP_LIST
+#include "Lean/LeanOps.cpp.inc"
+      >();
 }
 } // namespace mlir::lean

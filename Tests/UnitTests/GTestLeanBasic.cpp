@@ -26,8 +26,9 @@ TEST(GTestLeanBasic, DialectRegistration) {
 TEST(GTestLeanBasic, ParseBasicSource) {
   const char *source = R"(
   module {
-    func.func @test() -> !refcnt.rc<i64> {
+    func.func @test(%list: !refcnt.rc<!lean.obj<2, 0>>) -> !refcnt.rc<i64> {
       %0 = refcnt.new : !refcnt.rc<i64>
+      refcnt.dec %list : !refcnt.rc<!lean.obj<2, 0>>
       return %0 : !refcnt.rc<i64>
     }
   }

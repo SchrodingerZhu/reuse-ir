@@ -11,7 +11,7 @@ class Refcnt_Type<string name, string typeMnemonic, list<Trait> traits = []> :
 }
 
 def Refcnt_RcType : Refcnt_Type<"Rc", "rc",
-    []> {
+    [DeclareTypeInterfaceMethods<DataLayoutTypeInterface>]> {
 
   let summary = "RC pointer type";
   let description = [{
@@ -24,7 +24,7 @@ def Refcnt_RcType : Refcnt_Type<"Rc", "rc",
 }
 
 def Refcnt_TokenType : Refcnt_Type<"Token", "token",
-    []> {
+    [DeclareTypeInterfaceMethods<DataLayoutTypeInterface>]> {
 
   let summary = "Reuse token type";
   let description = [{

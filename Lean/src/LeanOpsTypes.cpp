@@ -19,4 +19,30 @@
 #define GET_TYPEDEF_CLASSES
 #include "Lean/LeanOpsTypes.cpp.inc"
 
-namespace mlir::lean {}
+namespace mlir::lean {
+void LeanDialect::addTypesImpl() {
+  addTypes<
+#define GET_TYPEDEF_LIST
+#include "Lean/LeanOpsTypes.cpp.inc"
+      >();
+}
+
+unsigned ObjType::getTypeSizeInBits(
+    const ::mlir::DataLayout &dataLayout,
+    [[maybe_unused]] ::mlir::DataLayoutEntryListRef params) const {
+  auto indexBits =
+      dataLayout.getTypeSizeInBits(::mlir::IndexType::get(getContext()));
+  return indexBits * (1 + getSubObjs()) + getScalaSize() * 8;
+}
+unsigned ObjType::getABIAlignment(
+    const ::mlir::DataLayout &dataLayout,
+    [[maybe_unused]] ::mlir::DataLayoutEntryListRef params) const {
+  return dataLayout.getTypeABIAlignment(::mlir::IndexType::get(getContext()));
+}
+unsigned ObjType::getPreferredAlignment(
+    const ::mlir::DataLayout &dataLayout,
+    [[maybe_unused]] ::mlir::DataLayoutEntryListRef params) const {
+  return dataLayout.getTypePreferredAlignment(
+      ::mlir::IndexType::get(getContext()));
+}
+} // namespace mlir::lean
