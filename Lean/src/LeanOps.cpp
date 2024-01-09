@@ -83,6 +83,7 @@ LogicalResult SProjOp::verify() {
     return failure();
   }
 
+  inflightErr.abandon();
   return success();
 }
 } // namespace mlir::lean

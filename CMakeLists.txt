@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
-project(Refcnt CXX C)
+project(ReuseAnalysis CXX C)
+
+option(REUSE_ANALYSIS_ENABLE_TESTS "Build Refcnt tests" ON)
 
 # use lld if clang is used
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -42,10 +44,13 @@ message(STATUS "include dirs for llvm and mlir: ${MLIR_INCLUDE_DIRS};${LLVM_INCL
 
 # Find the libraries that correspond to the LLVM components
 # that we wish to use
-llvm_map_components_to_libnames(LLVM_LIBS support)
 
-get_property(MLIR_ALL_LIBS GLOBAL PROPERTY MLIR_ALL_LIBS)
 
 include_directories(Lean/include Refcnt/include)
 add_subdirectory(Refcnt)
 add_subdirectory(Lean)
+
+if (REUSE_ANALYSIS_ENABLE_TESTS)
+  enable_testing()  
+  add_subdirectory(Tests)
+endif()
