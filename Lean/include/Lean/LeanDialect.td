@@ -12,9 +12,10 @@ def Lean_Dialect : Dialect {
   }];
   let dependentDialects =
       ["::mlir::refcnt::RefcntDialect", "::mlir::BuiltinDialect"];
-  let hasConstantMaterializer = 1;
+  
   let useDefaultTypePrinterParser = 1;
-  let useDefaultAttributePrinterParser = 1;
+  //let hasConstantMaterializer = 1;
+  //let useDefaultAttributePrinterParser = 1;
 }
 
 #endif // LEAN_DIALECT

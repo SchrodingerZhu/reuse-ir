@@ -18,3 +18,12 @@
 
 #define GET_TYPEDEF_CLASSES
 #include "Refcnt/RefcntOpsTypes.cpp.inc"
+
+namespace mlir::refcnt {
+void RefcntDialect::addTypesImpl() {
+  addTypes<
+#define GET_TYPEDEF_LIST
+#include "Refcnt/RefcntOpsTypes.cpp.inc"
+      >();
+}
+} // namespace mlir::refcnt

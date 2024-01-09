@@ -13,8 +13,13 @@ def Refcnt_Dialect : Dialect {
     extraneous memory allocations and deallocations.
   }];
   let dependentDialects = [];
-  let hasConstantMaterializer = 1;
   let useDefaultTypePrinterParser = 1;
+  let extraClassDeclaration = [{
+    private:
+      void addTypesImpl();
+      void addOpsImpl();
+  }];
+  //let hasConstantMaterializer = 1;
 }
 
 #endif // REFCNT_DIALECT
