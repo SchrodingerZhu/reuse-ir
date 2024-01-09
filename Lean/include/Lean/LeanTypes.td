@@ -12,8 +12,7 @@ class Lean_Type<string name, string typeMnemonic, list<Trait> traits = []>
 }
 
 def Lean_ObjType
-    : Lean_Type<"Obj", "obj",
-                [DeclareTypeInterfaceMethods<DataLayoutTypeInterface>]> {
+    : Lean_Type<"Obj", "obj"> {
   let summary = "Lean object type";
   let description = [{
     `lean.obj<O, S>` is a Lean object
