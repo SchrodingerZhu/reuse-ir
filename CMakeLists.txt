@@ -46,4 +46,6 @@ llvm_map_components_to_libnames(LLVM_LIBS support)
 
 get_property(MLIR_ALL_LIBS GLOBAL PROPERTY MLIR_ALL_LIBS)
 
+include_directories(Lean/include Refcnt/include)
 add_subdirectory(Refcnt)
+add_subdirectory(Lean)
