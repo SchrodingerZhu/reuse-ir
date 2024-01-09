@@ -84,9 +84,7 @@ def NewOp : Refcnt_Op<"new"> {
   let results = (outs Arg<Refcnt_RcType, "allocation result", []>:$result);
 
   let assemblyFormat =
-      "attr-dict `:` type($result)"; 
-
-  let hasVerifier = 1;
+      "attr-dict `:` type($result)";
 }
 
 #endif // REFCNT_OPS

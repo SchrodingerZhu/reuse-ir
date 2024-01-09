@@ -18,3 +18,5 @@
 
 #define GET_TYPEDEF_CLASSES
 #include "Lean/LeanOpsTypes.cpp.inc"
+
+namespace mlir::lean {}

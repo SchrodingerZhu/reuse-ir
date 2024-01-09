@@ -3,6 +3,7 @@ add_mlir_dialect_library(
         LeanOps.cpp
         LeanOpsDialect.cpp
         LeanOpsTypes.cpp
+        LeanOpsAttributes.cpp
     DEPENDS
         MLIRLeanOpsIncGen
     LINK_COMPONENTS

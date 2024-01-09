@@ -12,7 +12,9 @@
 #include <mlir/Interfaces/LoopLikeInterface.h>
 #include <mlir/Interfaces/SideEffectInterfaces.h>
 
+#include "Lean/LeanOpsAttributes.h"
 #include "Lean/LeanOpsTypes.h"
+#include "Refcnt/RefcntOpsTypes.h"
 
 #define GET_OP_CLASSES
 #include "Lean/LeanOps.h.inc"
