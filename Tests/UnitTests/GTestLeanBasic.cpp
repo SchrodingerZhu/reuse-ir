@@ -98,7 +98,7 @@ SOURCE_PARSE_TEST(GTestLeanBasic, ReverseMap, R"(
         default: ^bb_default,
         0: ^bb_nil,
         1: ^bb_cons
-      ]
+      ] { type = "List" }
     ^bb_default:
       llvm.unreachable
     ^bb_nil:
