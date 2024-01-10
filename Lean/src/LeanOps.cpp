@@ -1,3 +1,4 @@
+#include <mlir/IR/BuiltinTypes.h>
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/Support/LogicalResult.h>
 
@@ -93,6 +94,45 @@ LogicalResult AppOp::verify() {
   return success();
 }
 
+static refcnt::RcType getRcObjType(MLIRContext *context) {
+  return refcnt::RcType::get(context, lean::ObjType::get(context));
+}
+
+::mlir::ParseResult TagOp::parse(::mlir::OpAsmParser &parser,
+                                 ::mlir::OperationState &result) {
+  ::mlir::OpAsmParser::UnresolvedOperand objectRawOperands[1];
+  ::llvm::ArrayRef<::mlir::OpAsmParser::UnresolvedOperand> objectOperands(
+      objectRawOperands);
+  ::llvm::SMLoc objectOperandsLoc;
+  (void)objectOperandsLoc;
+  ::mlir::Type objectRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> objectTypes(objectRawTypes);
+
+  objectOperandsLoc = parser.getCurrentLocation();
+  if (parser.parseOperand(objectRawOperands[0]))
+    return ::mlir::failure();
+
+  objectRawTypes[0] = getRcObjType(parser.getContext());
+
+  if (parser.parseOptionalAttrDict(result.attributes))
+    return ::mlir::failure();
+
+  ::mlir::Type odsBuildableType0 =
+      parser.getBuilder().getType<::mlir::IndexType>();
+  result.addTypes(odsBuildableType0);
+  if (parser.resolveOperands(objectOperands, objectTypes, objectOperandsLoc,
+                             result.operands))
+    return ::mlir::failure();
+  return ::mlir::success();
+}
+
+void TagOp::print(::mlir::OpAsmPrinter &_odsPrinter) {
+  _odsPrinter << ' ';
+  _odsPrinter << getObject();
+  ::llvm::SmallVector<::llvm::StringRef, 2> elidedAttrs;
+  _odsPrinter.printOptionalAttrDict((*this)->getAttrs(), elidedAttrs);
+}
+
 ::mlir::ParseResult ProjOp::parse(::mlir::OpAsmParser &parser,
                                   ::mlir::OperationState &result) {
   ::mlir::OpAsmParser::UnresolvedOperand objectRawOperands[1];
@@ -110,15 +150,8 @@ LogicalResult AppOp::verify() {
   if (parser.parseOperand(objectRawOperands[0]))
     return ::mlir::failure();
 
-  {
-    objectRawTypes[0] = refcnt::RcType::get(
-        parser.getContext(), lean::ObjType::get(parser.getContext()));
-  }
-
-  {
-    resultRawTypes[0] = refcnt::RcType::get(
-        parser.getContext(), lean::ObjType::get(parser.getContext()));
-  }
+  objectRawTypes[0] = getRcObjType(parser.getContext());
+  resultRawTypes[0] = getRcObjType(parser.getContext());
 
   if (parser.parseComma())
     return ::mlir::failure();
@@ -143,6 +176,128 @@ void ProjOp::print(::mlir::OpAsmPrinter &_odsPrinter) {
   _odsPrinter.printStrippedAttrOrType(getFieldAttr());
   ::llvm::SmallVector<::llvm::StringRef, 2> elidedAttrs;
   elidedAttrs.push_back("field");
+  _odsPrinter.printOptionalAttrDict((*this)->getAttrs(), elidedAttrs);
+}
+
+::mlir::ParseResult SProjOp::parse(::mlir::OpAsmParser &parser,
+                                   ::mlir::OperationState &result) {
+  ::mlir::OpAsmParser::UnresolvedOperand objectRawOperands[1];
+  ::llvm::ArrayRef<::mlir::OpAsmParser::UnresolvedOperand> objectOperands(
+      objectRawOperands);
+  ::llvm::SMLoc objectOperandsLoc;
+  (void)objectOperandsLoc;
+  ::mlir::Type objectRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> objectTypes(objectRawTypes);
+  ::mlir::Type resultRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> resultTypes(resultRawTypes);
+  ::mlir::IntegerAttr offsetAttr;
+
+  objectOperandsLoc = parser.getCurrentLocation();
+  if (parser.parseOperand(objectRawOperands[0]))
+    return ::mlir::failure();
+  objectRawTypes[0] = getRcObjType(parser.getContext());
+
+  if (parser.parseComma())
+    return ::mlir::failure();
+
+  if (parser.parseCustomAttributeWithFallback(offsetAttr, ::mlir::Type{},
+                                              "offset", result.attributes)) {
+    return ::mlir::failure();
+  }
+
+  if (parser.parseComma())
+    return ::mlir::failure();
+
+  {
+    ::mlir::Type type;
+    if (parser.parseCustomTypeWithFallback(type))
+      return ::mlir::failure();
+    resultRawTypes[0] = type;
+  }
+  result.addTypes(resultTypes);
+
+  if (parser.parseOptionalAttrDict(result.attributes))
+    return ::mlir::failure();
+
+  if (parser.resolveOperands(objectOperands, objectTypes, objectOperandsLoc,
+                             result.operands))
+    return ::mlir::failure();
+  return ::mlir::success();
+}
+
+void SProjOp::print(::mlir::OpAsmPrinter &_odsPrinter) {
+  _odsPrinter << ' ';
+  _odsPrinter << getObject();
+  _odsPrinter << ',';
+  _odsPrinter << ' ';
+  _odsPrinter.printStrippedAttrOrType(getOffsetAttr());
+  _odsPrinter << ',';
+  _odsPrinter << ' ';
+  {
+    auto type = getResult().getType();
+    if (auto validType = type.dyn_cast<::mlir::IndexType>())
+      _odsPrinter.printStrippedAttrOrType(validType);
+    else
+      _odsPrinter << type;
+  }
+  ::llvm::SmallVector<::llvm::StringRef, 2> elidedAttrs;
+  elidedAttrs.push_back("offset");
+  _odsPrinter.printOptionalAttrDict((*this)->getAttrs(), elidedAttrs);
+}
+
+::mlir::ParseResult AppOp::parse(::mlir::OpAsmParser &parser,
+                                 ::mlir::OperationState &result) {
+  ::mlir::OpAsmParser::UnresolvedOperand fnRawOperands[1];
+  ::llvm::ArrayRef<::mlir::OpAsmParser::UnresolvedOperand> fnOperands(
+      fnRawOperands);
+  ::llvm::SMLoc fnOperandsLoc;
+  (void)fnOperandsLoc;
+  ::mlir::Type fnRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> fnTypes(fnRawTypes);
+  ::llvm::SmallVector<::mlir::OpAsmParser::UnresolvedOperand, 4> argsOperands;
+  ::llvm::SMLoc argsOperandsLoc;
+  (void)argsOperandsLoc;
+  ::llvm::SmallVector<::mlir::Type, 1> argsTypes;
+  ::mlir::Type resultRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> resultTypes(resultRawTypes);
+
+  fnOperandsLoc = parser.getCurrentLocation();
+  if (parser.parseOperand(fnRawOperands[0]))
+    return ::mlir::failure();
+
+  fnRawTypes[0] = getRcObjType(parser.getContext());
+
+  if (parser.parseLParen())
+    return ::mlir::failure();
+
+  argsOperandsLoc = parser.getCurrentLocation();
+  if (parser.parseOperandList(argsOperands))
+    return ::mlir::failure();
+  if (parser.parseRParen())
+    return ::mlir::failure();
+
+  resultRawTypes[0] = getRcObjType(parser.getContext());
+  argsTypes.resize(argsOperands.size(), getRcObjType(parser.getContext()));
+
+  if (parser.parseOptionalAttrDict(result.attributes))
+    return ::mlir::failure();
+  result.addTypes(resultTypes);
+  if (parser.resolveOperands(fnOperands, fnTypes, fnOperandsLoc,
+                             result.operands))
+    return ::mlir::failure();
+  if (parser.resolveOperands(argsOperands, argsTypes, argsOperandsLoc,
+                             result.operands))
+    return ::mlir::failure();
+  return ::mlir::success();
+}
+
+void AppOp::print(::mlir::OpAsmPrinter &_odsPrinter) {
+  _odsPrinter << ' ';
+  _odsPrinter << getFn();
+  _odsPrinter << ' ' << '(';
+  _odsPrinter << getArgs();
+  _odsPrinter << ')';
+  ::llvm::SmallVector<::llvm::StringRef, 2> elidedAttrs;
   _odsPrinter.printOptionalAttrDict((*this)->getAttrs(), elidedAttrs);
 }
 

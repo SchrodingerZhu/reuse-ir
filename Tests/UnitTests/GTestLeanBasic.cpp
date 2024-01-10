@@ -51,8 +51,29 @@ SOURCE_PARSE_TEST(GTestLeanBasic, ProjectionAndApp, R"(
       %1 = lean.proj %x, 1 : index
       refcnt.inc %0 : !refcnt.rc<!lean.obj>
       refcnt.inc %1 : !refcnt.rc<!lean.obj>
-      %2 = lean.app %f : !refcnt.rc<!lean.obj>, (%0, %1 : !refcnt.rc<!lean.obj>, !refcnt.rc<!lean.obj>), !refcnt.rc<!lean.obj>
+      refcnt.dec %x : !refcnt.rc<!lean.obj>
+      %2 = lean.app %f (%0, %1)
       return %2 : !refcnt.rc<!lean.obj>
+    }
+  }
+  )")
+
+SOURCE_PARSE_TEST(GTestLeanBasic, Tag, R"(
+  module {
+    func.func @test(%obj: !refcnt.rc<!lean.obj>) -> index {
+      %0 = lean.tag %obj
+      refcnt.dec %obj : !refcnt.rc<!lean.obj>
+      return %0 : index
+    }
+  }
+  )")
+
+SOURCE_PARSE_TEST(GTestLeanBasic, ScalarProjection, R"(
+  module {
+    func.func @test(%obj: !refcnt.rc<!lean.obj>) -> f64 {
+      %0 = lean.sproj %obj, 0 : index, f64
+      refcnt.dec %obj : !refcnt.rc<!lean.obj>
+      return %0 : f64
     }
   }
   )")

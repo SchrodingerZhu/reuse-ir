@@ -15,8 +15,7 @@ def TagOp : Lean_Op<"tag"> {
     The object must be a RC pointer to a Lean object.
 
     ```mlir
-    lean.tag %obj : !refcnt.rc<!lean.obj>
-    ```
+    lean.tag %obj
     ```
   }];
 
@@ -25,10 +24,9 @@ def TagOp : Lean_Op<"tag"> {
   );
 
   let results = (outs Builtin_Index : $tag);
-
-  let assemblyFormat = "$object attr-dict `:` type($object)";
-
+  let hasCustomAssemblyFormat = 1;
   let hasVerifier = 1;
+
 }
 
 def ProjOp : Lean_Op<"proj"> {
@@ -65,8 +63,7 @@ def SProjOp : Lean_Op<"sproj"> {
     Builtin_IntegerAttr:$offset
   );
   let results = (outs AnyType:$result);
-  let assemblyFormat =
-    "$object `:` type($object) `,` type($result) `,` $offset attr-dict";
+  let hasCustomAssemblyFormat = 1;
   let hasVerifier = 1;
 }
 
@@ -78,7 +75,7 @@ def AppOp : Lean_Op<"app"> {
     The arguments must be RC pointers to Lean objects.
     
     ```mlir
-    %0 = lean.app %fn : !refcnt.rc<!lean.obj>,  (%arg1 %arg2 : !refcnt.rc<!lean.obj> !refcnt.rc<!lean.obj>), !refcnt.rc<!lean.obj>
+    %0 = lean.app %fn (%arg0, %arg1)
     ```
   }];
   let arguments = (
@@ -86,8 +83,7 @@ def AppOp : Lean_Op<"app"> {
     Variadic<Refcnt_RcType>:$args
   );
   let results = (outs Res<Refcnt_RcType, "the RC pointer to the result", []>:$result);
-  let assemblyFormat =
-    "$fn `:` type($fn) `,` `(` $args `:` type($args) `)` `,` type($result) attr-dict";
+  let hasCustomAssemblyFormat = 1;
   let hasVerifier = 1;
 }
 
