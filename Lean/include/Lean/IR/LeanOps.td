@@ -1,8 +1,8 @@
 #ifndef LEAN_OPS
 #define LEAN_OPS
-include "Lean/LeanDialect.td"
-include "Lean/LeanTypes.td"
-include "Lean/LeanAttributes.td"
+include "Lean/IR/LeanDialect.td"
+include "Lean/IR/LeanTypes.td"
+include "Lean/IR/LeanAttributes.td"
 include "Refcnt/RefcntOps.td"
 
 class Lean_Op<string mnemonic, list<Trait> traits = []>

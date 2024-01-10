@@ -2,13 +2,13 @@
 #include <mlir/IR/Diagnostics.h>
 #include <mlir/Support/LogicalResult.h>
 
-#include "Lean/LeanOps.h"
-#include "Lean/LeanOpsDialect.h"
-#include "Lean/LeanOpsTypes.h"
+#include "Lean/IR/LeanOps.h"
+#include "Lean/IR/LeanOpsDialect.h"
+#include "Lean/IR/LeanOpsTypes.h"
 #include "Refcnt/RefcntOpsTypes.h"
 
 #define GET_OP_CLASSES
-#include "Lean/LeanOps.cpp.inc"
+#include "Lean/IR/LeanOps.cpp.inc"
 
 namespace mlir::lean {
 
@@ -477,7 +477,7 @@ void SetOp::print(::mlir::OpAsmPrinter &_odsPrinter) {
 void LeanDialect::addOpsImpl() {
   addOperations<
 #define GET_OP_LIST
-#include "Lean/LeanOps.cpp.inc"
+#include "Lean/IR/LeanOps.cpp.inc"
       >();
 }
 } // namespace mlir::lean

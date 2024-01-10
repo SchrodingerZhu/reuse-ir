@@ -13,17 +13,17 @@
 #include <llvm/ADT/TypeSwitch.h>
 #include <llvm/Support/ErrorHandling.h>
 
-#include "Lean/LeanOpsDialect.h"
-#include "Lean/LeanOpsTypes.h"
+#include "Lean/IR/LeanOpsDialect.h"
+#include "Lean/IR/LeanOpsTypes.h"
 
 #define GET_TYPEDEF_CLASSES
-#include "Lean/LeanOpsTypes.cpp.inc"
+#include "Lean/IR/LeanOpsTypes.cpp.inc"
 
 namespace mlir::lean {
 void LeanDialect::addTypesImpl() {
   addTypes<
 #define GET_TYPEDEF_LIST
-#include "Lean/LeanOpsTypes.cpp.inc"
+#include "Lean/IR/LeanOpsTypes.cpp.inc"
       >();
 }
 } // namespace mlir::lean

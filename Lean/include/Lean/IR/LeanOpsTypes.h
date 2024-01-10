@@ -6,5 +6,5 @@
 #include <mlir/Interfaces/DataLayoutInterfaces.h>
 
 #define GET_TYPEDEF_CLASSES
-#include "Lean/LeanOpsTypes.h.inc"
+#include "Lean/IR/LeanOpsTypes.h.inc"
 #endif // LEAN_TYPES_H

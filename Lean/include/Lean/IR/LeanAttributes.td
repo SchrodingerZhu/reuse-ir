@@ -1,7 +1,7 @@
 #ifndef LEAN_ATTRIBUTES
 #define LEAN_ATTRIBUTES
 
-include "Lean/LeanDialect.td"
+include "Lean/IR/LeanDialect.td"
 include "mlir/IR/BuiltinAttributeInterfaces.td"
 include "mlir/IR/BuiltinAttributes.td"
 

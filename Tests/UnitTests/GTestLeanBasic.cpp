@@ -6,7 +6,7 @@
 #include <mlir/InitAllDialects.h>
 #include <mlir/Parser/Parser.h>
 
-#include "Lean/LeanOpsDialect.h"
+#include "Lean/IR/LeanOpsDialect.h"
 #include "Refcnt/RefcntOpsDialect.h"
 
 namespace mlir {

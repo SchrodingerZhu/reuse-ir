@@ -1,7 +1,7 @@
 #ifndef LEAN_TYPES
 #define LEAN_TYPES
 
-include "Lean/LeanDialect.td"
+include "Lean/IR/LeanDialect.td"
 include "mlir/IR/AttrTypeBase.td"
 include "mlir/IR/BuiltinTypes.td"
 

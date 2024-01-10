@@ -3,5 +3,5 @@
 #include <mlir/IR/BuiltinAttributes.h>
 
 #define GET_ATTRDEF_CLASSES
-#include "Lean/LeanOpsAttributes.h.inc"
+#include "Lean/IR/LeanOpsAttributes.h.inc"
 #endif // LEAN_ATTRIBUTES_H

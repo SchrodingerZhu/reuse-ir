@@ -14,8 +14,8 @@
 #include <mlir/Support/LLVM.h>
 #include <mlir/Support/LogicalResult.h>
 
-#include "Lean/LeanOpsAttributes.h"
-#include "Lean/LeanOpsDialect.h"
+#include "Lean/IR/LeanOpsAttributes.h"
+#include "Lean/IR/LeanOpsDialect.h"
 
 #define GET_ATTRDEF_CLASSES
-#include "Lean/LeanOpsAttributes.cpp.inc"
+#include "Lean/IR/LeanOpsAttributes.cpp.inc"
