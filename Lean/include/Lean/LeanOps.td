@@ -8,38 +8,14 @@ include "Refcnt/RefcntOps.td"
 class Lean_Op<string mnemonic, list<Trait> traits = []>
     : Op<Lean_Dialect, mnemonic, traits>;
 
-def SetTagOp : Lean_Op<"set_tag"> {
-  let summary = "set tag to a newly allocated object";
-  let description = [{
-    `lean.set_tag` set tag to a newly allocated object.
-    The object must be a RC pointer to a Lean object.
-
-    ```mlir
-    lean.set_tag %obj : refcnt.rc<Obj<X, Y>>, 0 : index, "List.nil"
-    ```
-    ```
-  }];
-
-  let arguments = (
-    ins Arg<Refcnt_RcType, "the RC pointer to the newly allocated object", []>:$object,
-    Builtin_IntegerAttr:$tag,
-    OptionalAttr<Builtin_StringAttr>:$ctor
-  );
-
-  let assemblyFormat =
-      "$object `:` type($object) `,` $tag (`,` $ctor^)? attr-dict";
-
-  let hasVerifier = 1;
-}
-
-def GetTagOp : Lean_Op<"get_tag"> {
+def TagOp : Lean_Op<"tag"> {
   let summary = "get tag of a Lean object";
   let description = [{
-    `lean.get_tag` get tag of a Lean object.
+    `lean.tag` get tag of a Lean object.
     The object must be a RC pointer to a Lean object.
 
     ```mlir
-    lean.get_tag %obj : refcnt.rc<Obj<X, Y>>
+    lean.tag %obj : !refcnt.rc<!lean.obj>
     ```
     ```
   }];

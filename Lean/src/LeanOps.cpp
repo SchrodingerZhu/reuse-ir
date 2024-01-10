@@ -9,19 +9,7 @@
 #include "Lean/LeanOps.cpp.inc"
 
 namespace mlir::lean {
-LogicalResult SetTagOp::verify() {
-  if (!this->getObject().getType().getPointee().isa<ObjType>()) {
-    ::mlir::emitError(getLoc(), "invalid lean.set_tag: pointee type of rc "
-                                "is not a lean object.");
-    return failure();
-  }
-  if (!this->getTag().getType().isIndex()) {
-    ::mlir::emitError(getLoc(), "invalid lean.set_tag: tag is not an index.");
-    return failure();
-  }
-  return success();
-}
-LogicalResult GetTagOp::verify() {
+LogicalResult TagOp::verify() {
   if (!this->getObject().getType().getPointee().isa<ObjType>()) {
     ::mlir::emitError(getLoc(), "invalid lean.get_tag: pointee type of rc "
                                 "is not a lean object.");
@@ -37,11 +25,6 @@ LogicalResult ProjOp::verify() {
   }
   if (!this->getField().getType().isIndex()) {
     ::mlir::emitError(getLoc(), "invalid lean.proj: field is not an index.");
-    return failure();
-  }
-  if (this->getField().getUInt() >=
-      this->getObject().getType().getPointee().cast<ObjType>().getSubObjs()) {
-    ::mlir::emitError(getLoc(), "invalid lean.proj: field is out of bounds.");
     return failure();
   }
   if (!this->getResult().getType().getPointee().isa<ObjType>()) {
@@ -66,21 +49,8 @@ LogicalResult SProjOp::verify() {
     inflightErr << "offset is not an index.";
     return failure();
   }
-
-  const auto &resultType = this->getResult().getType();
-
-  if (!isKnownScalarType(resultType)) {
+  if (!isKnownScalarType(this->getResult().getType())) {
     inflightErr << "result type is not a known scalar type.";
-    return failure();
-  }
-
-  const auto &inputPointee =
-      this->getObject().getType().getPointee().cast<ObjType>();
-
-  if (this->getOffset().getUInt() + resultType.getIntOrFloatBitWidth() / 8 >=
-      inputPointee.getScalaSize()) {
-    inflightErr << "access of type " << resultType << " at offset "
-                << this->getOffset().getUInt() << " is out of bounds.";
     return failure();
   }
 
