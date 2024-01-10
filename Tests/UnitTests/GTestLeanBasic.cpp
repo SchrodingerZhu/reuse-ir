@@ -36,10 +36,10 @@ TEST(GTestLeanBasic, DialectRegistration) {
 
 SOURCE_PARSE_TEST(GTestLeanBasic, ParseBasic, R"(
   module {
-    func.func @test(%list: !refcnt.rc<!lean.obj<2, 0>>) -> !refcnt.rc<i64> {
-      %0 = refcnt.new : !refcnt.rc<i64>
-      refcnt.dec %list : !refcnt.rc<!lean.obj<2, 0>>
-      return %0 : !refcnt.rc<i64>
+    func.func @test(%list: !refcnt.rc<!lean.obj>) -> !refcnt.rc<!lean.obj> {
+      %0 = refcnt.new { ctor = "List.Nil" , tag = 0 } : !refcnt.rc<!lean.obj> 
+      refcnt.dec %list : !refcnt.rc<!lean.obj>
+      return %0 : !refcnt.rc<!lean.obj>
     }
   }
   )")
