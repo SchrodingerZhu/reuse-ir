@@ -47,8 +47,8 @@ SOURCE_PARSE_TEST(GTestLeanBasic, ParseBasic, R"(
 SOURCE_PARSE_TEST(GTestLeanBasic, ProjectionAndApp, R"(
   module {
     func.func @test(%f: !refcnt.rc<!lean.obj>, %x : !refcnt.rc<!lean.obj>) -> !refcnt.rc<!lean.obj> {
-      %0 = lean.proj %x : !refcnt.rc<!lean.obj>, !refcnt.rc<!lean.obj>, 0 : index
-      %1 = lean.proj %x : !refcnt.rc<!lean.obj>, !refcnt.rc<!lean.obj>, 1 : index
+      %0 = lean.proj %x, 0 : index
+      %1 = lean.proj %x, 1 : index
       refcnt.inc %0 : !refcnt.rc<!lean.obj>
       refcnt.inc %1 : !refcnt.rc<!lean.obj>
       %2 = lean.app %f : !refcnt.rc<!lean.obj>, (%0, %1 : !refcnt.rc<!lean.obj>, !refcnt.rc<!lean.obj>), !refcnt.rc<!lean.obj>

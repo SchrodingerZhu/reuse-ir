@@ -93,6 +93,59 @@ LogicalResult AppOp::verify() {
   return success();
 }
 
+::mlir::ParseResult ProjOp::parse(::mlir::OpAsmParser &parser,
+                                  ::mlir::OperationState &result) {
+  ::mlir::OpAsmParser::UnresolvedOperand objectRawOperands[1];
+  ::llvm::ArrayRef<::mlir::OpAsmParser::UnresolvedOperand> objectOperands(
+      objectRawOperands);
+  ::llvm::SMLoc objectOperandsLoc;
+  (void)objectOperandsLoc;
+  ::mlir::Type objectRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> objectTypes(objectRawTypes);
+  ::mlir::Type resultRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> resultTypes(resultRawTypes);
+  ::mlir::IntegerAttr fieldAttr;
+
+  objectOperandsLoc = parser.getCurrentLocation();
+  if (parser.parseOperand(objectRawOperands[0]))
+    return ::mlir::failure();
+
+  {
+    objectRawTypes[0] = refcnt::RcType::get(
+        parser.getContext(), lean::ObjType::get(parser.getContext()));
+  }
+
+  {
+    resultRawTypes[0] = refcnt::RcType::get(
+        parser.getContext(), lean::ObjType::get(parser.getContext()));
+  }
+
+  if (parser.parseComma())
+    return ::mlir::failure();
+
+  if (parser.parseCustomAttributeWithFallback(fieldAttr, ::mlir::Type{},
+                                              "field", result.attributes)) {
+    return ::mlir::failure();
+  }
+  if (parser.parseOptionalAttrDict(result.attributes))
+    return ::mlir::failure();
+  result.addTypes(resultTypes);
+  if (parser.resolveOperands(objectOperands, objectTypes, objectOperandsLoc,
+                             result.operands))
+    return ::mlir::failure();
+  return ::mlir::success();
+}
+
+void ProjOp::print(::mlir::OpAsmPrinter &_odsPrinter) {
+  _odsPrinter << ' ';
+  _odsPrinter << getObject();
+  _odsPrinter << ", ";
+  _odsPrinter.printStrippedAttrOrType(getFieldAttr());
+  ::llvm::SmallVector<::llvm::StringRef, 2> elidedAttrs;
+  elidedAttrs.push_back("field");
+  _odsPrinter.printOptionalAttrDict((*this)->getAttrs(), elidedAttrs);
+}
+
 void LeanDialect::addOpsImpl() {
   addOperations<
 #define GET_OP_LIST

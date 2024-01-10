@@ -38,7 +38,7 @@ def ProjOp : Lean_Op<"proj"> {
     The object must be a RC pointer to a Lean object.
     
     ```mlir
-    lean.proj %obj : refcnt.rc<Obj<A, B>>, refcnt.rc<Obj<C, D>>, 0 : index
+    lean.proj %obj, 0 : index
     ```
   }];
   let arguments = (
@@ -46,8 +46,7 @@ def ProjOp : Lean_Op<"proj"> {
      Builtin_IntegerAttr:$field
    );
   let results = (outs Res<Refcnt_RcType, "the RC pointer to the projected object", []>:$result);
-  let assemblyFormat =
-      "$object `:` type($object) `,` type($result) `,` $field attr-dict";
+  let hasCustomAssemblyFormat = 1;
   let hasVerifier = 1;
 }
 
