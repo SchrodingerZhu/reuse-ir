@@ -21,18 +21,18 @@
 
 namespace mlir::refcnt {
 #define LAYOUT_AS_INDEX_TYPE(TYPE)                                             \
-  unsigned TYPE::getTypeSizeInBits(                                            \
+  ::llvm::TypeSize TYPE::getTypeSizeInBits(                                    \
       const ::mlir::DataLayout &dataLayout,                                    \
       [[maybe_unused]] ::mlir::DataLayoutEntryListRef params) const {          \
     return dataLayout.getTypeSizeInBits(::mlir::IndexType::get(getContext())); \
   }                                                                            \
-  unsigned TYPE::getABIAlignment(                                              \
+  uint64_t TYPE::getABIAlignment(                                              \
       const ::mlir::DataLayout &dataLayout,                                    \
       [[maybe_unused]] ::mlir::DataLayoutEntryListRef params) const {          \
     return dataLayout.getTypeABIAlignment(                                     \
         ::mlir::IndexType::get(getContext()));                                 \
   }                                                                            \
-  unsigned TYPE::getPreferredAlignment(                                        \
+  uint64_t TYPE::getPreferredAlignment(                                        \
       const ::mlir::DataLayout &dataLayout,                                    \
       [[maybe_unused]] ::mlir::DataLayoutEntryListRef params) const {          \
     return dataLayout.getTypePreferredAlignment(                               \
