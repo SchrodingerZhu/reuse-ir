@@ -117,8 +117,7 @@ static refcnt::RcType getRcObjType(MLIRContext *context) {
   if (parser.parseOptionalAttrDict(result.attributes))
     return ::mlir::failure();
 
-  ::mlir::Type odsBuildableType0 =
-      parser.getBuilder().getType<::mlir::IndexType>();
+  ::mlir::Type odsBuildableType0 = IntegerType::get(parser.getContext(), 16);
   result.addTypes(odsBuildableType0);
   if (parser.resolveOperands(objectOperands, objectTypes, objectOperandsLoc,
                              result.operands))
@@ -298,6 +297,180 @@ void AppOp::print(::mlir::OpAsmPrinter &_odsPrinter) {
   _odsPrinter << getArgs();
   _odsPrinter << ')';
   ::llvm::SmallVector<::llvm::StringRef, 2> elidedAttrs;
+  _odsPrinter.printOptionalAttrDict((*this)->getAttrs(), elidedAttrs);
+}
+
+LogicalResult SSetOp::verify() {
+  auto inflightErr = ::mlir::emitError(getLoc(), "invalid lean.sset: ");
+
+  if (!isRcOfObject(this->getObject())) {
+    inflightErr << "pointee type of object rc is not a lean object.";
+    return failure();
+  }
+  if (!this->getOffset().getType().isIndex()) {
+    inflightErr << "offset is not an index.";
+    return failure();
+  }
+  if (!isKnownScalarType(this->getValue().getType())) {
+    inflightErr << "value type is not a known scalar type.";
+    return failure();
+  }
+
+  inflightErr.abandon();
+  return success();
+}
+
+LogicalResult SetOp::verify() {
+  auto inflightErr = ::mlir::emitError(getLoc(), "invalid lean.set: ");
+  if (!isRcOfObject(this->getObject())) {
+    inflightErr << "pointee type of object rc is not a lean object.";
+    return failure();
+  }
+  if (!isRcOfObject(this->getValue())) {
+    inflightErr << "pointee type of value rc is not a lean object.";
+    return failure();
+  }
+  if (!this->getField().getType().isIndex()) {
+    inflightErr << "field is not an index.";
+    return failure();
+  }
+  inflightErr.abandon();
+  return success();
+}
+
+::mlir::ParseResult SSetOp::parse(::mlir::OpAsmParser &parser,
+                                  ::mlir::OperationState &result) {
+  ::mlir::OpAsmParser::UnresolvedOperand objectRawOperands[1];
+  ::llvm::ArrayRef<::mlir::OpAsmParser::UnresolvedOperand> objectOperands(
+      objectRawOperands);
+  ::llvm::SMLoc objectOperandsLoc;
+  ::mlir::Type objectRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> objectTypes(objectRawTypes);
+  ::mlir::IntegerAttr offsetAttr;
+  ::mlir::OpAsmParser::UnresolvedOperand valueRawOperands[1];
+  ::llvm::ArrayRef<::mlir::OpAsmParser::UnresolvedOperand> valueOperands(
+      valueRawOperands);
+  ::llvm::SMLoc valueOperandsLoc;
+  ::mlir::Type valueRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> valueTypes(valueRawTypes);
+
+  objectOperandsLoc = parser.getCurrentLocation();
+  if (parser.parseOperand(objectRawOperands[0]))
+    return ::mlir::failure();
+  objectRawTypes[0] = getRcObjType(parser.getContext());
+
+  if (parser.parseComma())
+    return ::mlir::failure();
+
+  if (parser.parseCustomAttributeWithFallback(offsetAttr, ::mlir::Type{},
+                                              "offset", result.attributes)) {
+    return ::mlir::failure();
+  }
+
+  if (parser.parseComma())
+    return ::mlir::failure();
+
+  valueOperandsLoc = parser.getCurrentLocation();
+  if (parser.parseOperand(valueRawOperands[0]))
+    return ::mlir::failure();
+
+  if (parser.parseColon())
+    return ::mlir::failure();
+
+  {
+    ::mlir::Type type;
+    if (parser.parseCustomTypeWithFallback(type))
+      return ::mlir::failure();
+    valueRawTypes[0] = type;
+  }
+
+  if (parser.parseOptionalAttrDict(result.attributes))
+    return ::mlir::failure();
+
+  if (parser.resolveOperands(objectOperands, objectTypes, objectOperandsLoc,
+                             result.operands))
+    return ::mlir::failure();
+  if (parser.resolveOperands(valueOperands, valueTypes, valueOperandsLoc,
+                             result.operands))
+    return ::mlir::failure();
+  return ::mlir::success();
+}
+
+void SSetOp::print(::mlir::OpAsmPrinter &_odsPrinter) {
+  _odsPrinter << ' ';
+  _odsPrinter << getObject();
+  _odsPrinter << ',';
+  _odsPrinter << ' ';
+  _odsPrinter.printStrippedAttrOrType(getOffsetAttr());
+  _odsPrinter << ',';
+  _odsPrinter << ' ';
+  _odsPrinter << getValue();
+  ::llvm::SmallVector<::llvm::StringRef, 2> elidedAttrs;
+  elidedAttrs.push_back("offset");
+  _odsPrinter.printOptionalAttrDict((*this)->getAttrs(), elidedAttrs);
+}
+
+::mlir::ParseResult SetOp::parse(::mlir::OpAsmParser &parser,
+                                 ::mlir::OperationState &result) {
+  ::mlir::OpAsmParser::UnresolvedOperand objectRawOperands[1];
+  ::llvm::ArrayRef<::mlir::OpAsmParser::UnresolvedOperand> objectOperands(
+      objectRawOperands);
+  ::llvm::SMLoc objectOperandsLoc;
+  ::mlir::Type objectRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> objectTypes(objectRawTypes);
+  ::mlir::IntegerAttr fieldAttr;
+  ::mlir::OpAsmParser::UnresolvedOperand valueRawOperands[1];
+  ::llvm::ArrayRef<::mlir::OpAsmParser::UnresolvedOperand> valueOperands(
+      valueRawOperands);
+  ::llvm::SMLoc valueOperandsLoc;
+  ::mlir::Type valueRawTypes[1];
+  ::llvm::ArrayRef<::mlir::Type> valueTypes(valueRawTypes);
+
+  objectOperandsLoc = parser.getCurrentLocation();
+  if (parser.parseOperand(objectRawOperands[0]))
+    return ::mlir::failure();
+  objectRawTypes[0] = getRcObjType(parser.getContext());
+
+  if (parser.parseComma())
+    return ::mlir::failure();
+
+  if (parser.parseCustomAttributeWithFallback(fieldAttr, ::mlir::Type{},
+                                              "field", result.attributes))
+    return ::mlir::failure();
+
+  if (parser.parseComma())
+    return ::mlir::failure();
+
+  valueOperandsLoc = parser.getCurrentLocation();
+  if (parser.parseOperand(valueRawOperands[0]))
+    return ::mlir::failure();
+  valueRawTypes[0] = getRcObjType(parser.getContext());
+
+  if (parser.parseOptionalAttrDict(result.attributes))
+    return ::mlir::failure();
+
+  if (parser.resolveOperands(objectOperands, objectTypes, objectOperandsLoc,
+                             result.operands))
+    return ::mlir::failure();
+
+  if (parser.resolveOperands(valueOperands, valueTypes, valueOperandsLoc,
+                             result.operands))
+    return ::mlir::failure();
+
+  return ::mlir::success();
+}
+
+void SetOp::print(::mlir::OpAsmPrinter &_odsPrinter) {
+  _odsPrinter << ' ';
+  _odsPrinter << getObject();
+  _odsPrinter << ',';
+  _odsPrinter << ' ';
+  _odsPrinter.printStrippedAttrOrType(getFieldAttr());
+  _odsPrinter << ',';
+  _odsPrinter << ' ';
+  _odsPrinter << getValue();
+  ::llvm::SmallVector<::llvm::StringRef, 2> elidedAttrs;
+  elidedAttrs.push_back("field");
   _odsPrinter.printOptionalAttrDict((*this)->getAttrs(), elidedAttrs);
 }
 

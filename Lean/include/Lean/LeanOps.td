@@ -23,10 +23,50 @@ def TagOp : Lean_Op<"tag"> {
     ins Arg<Refcnt_RcType, "the RC pointer to the Lean object", []>:$object
   );
 
-  let results = (outs Builtin_Index : $tag);
+  let results = (outs Builtin_Integer : $tag);
   let hasCustomAssemblyFormat = 1;
   let hasVerifier = 1;
 
+}
+
+def SetOp : Lean_Op<"set"> {
+  let summary = "set field value of a Lean object";
+  let description = [{
+    `lean.set` set field value of a Lean object.
+    The object must be a RC pointer to a Lean object.
+    The field must be a RC pointer to a Lean object.
+    
+    ```mlir
+    lean.set %obj, 0 : index, %value
+    ```
+  }];
+  let arguments = (
+     ins Arg<Refcnt_RcType, "the RC pointer to the Lean object", []>:$object,
+     Builtin_IntegerAttr:$field,
+    Arg<Refcnt_RcType, "the RC pointer to the Lean object", []>:$value
+   );
+  let hasCustomAssemblyFormat = 1;
+  let hasVerifier = 1;
+}
+
+def SSetOp : Lean_Op<"sset"> {
+  let summary = "set scalar field value of a Lean object";
+  let description = [{
+    `lean.sset` set field value of a Lean object.
+    The object must be a RC pointer to a Lean object.
+    The field must be a scalar.
+    
+    ```mlir
+    lean.sset %obj, 0 : index, %value : f64
+    ```
+  }];
+  let arguments = (
+     ins Arg<Refcnt_RcType, "the RC pointer to the Lean object", []>:$object,
+     Builtin_IntegerAttr:$offset,
+     Arg<AnyType, "the scalar value to set", []>:$value
+   );
+  let hasCustomAssemblyFormat = 1;
+  let hasVerifier = 1;
 }
 
 def ProjOp : Lean_Op<"proj"> {
