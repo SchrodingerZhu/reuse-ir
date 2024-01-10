@@ -4,13 +4,23 @@
 #include "Lean/LeanOps.h"
 #include "Lean/LeanOpsDialect.h"
 #include "Lean/LeanOpsTypes.h"
+#include "Refcnt/RefcntOpsTypes.h"
 
 #define GET_OP_CLASSES
 #include "Lean/LeanOps.cpp.inc"
 
 namespace mlir::lean {
+
+static bool isRcOfObject(const Value &rc) {
+  if (!rc.getType().isa<refcnt::RcType>()) {
+    return false;
+  }
+  auto casted = rc.getType().cast<refcnt::RcType>();
+  return casted.getPointee().isa<ObjType>();
+}
+
 LogicalResult TagOp::verify() {
-  if (!this->getObject().getType().getPointee().isa<ObjType>()) {
+  if (!isRcOfObject(this->getObject())) {
     ::mlir::emitError(getLoc(), "invalid lean.get_tag: pointee type of rc "
                                 "is not a lean object.");
     return failure();
@@ -18,7 +28,7 @@ LogicalResult TagOp::verify() {
   return success();
 }
 LogicalResult ProjOp::verify() {
-  if (!this->getObject().getType().getPointee().isa<ObjType>()) {
+  if (!isRcOfObject(this->getObject())) {
     ::mlir::emitError(getLoc(), "invalid lean.proj: pointee type of object rc "
                                 "is not a lean object.");
     return failure();
@@ -27,7 +37,7 @@ LogicalResult ProjOp::verify() {
     ::mlir::emitError(getLoc(), "invalid lean.proj: field is not an index.");
     return failure();
   }
-  if (!this->getResult().getType().getPointee().isa<ObjType>()) {
+  if (!isRcOfObject(this->getResult())) {
     ::mlir::emitError(getLoc(), "invalid lean.proj: pointee type of result rc "
                                 "is not a lean object.");
   }
@@ -41,7 +51,7 @@ static bool isKnownScalarType(const mlir::Type &type) {
 LogicalResult SProjOp::verify() {
   auto inflightErr = ::mlir::emitError(getLoc(), "invalid lean.sproj: ");
 
-  if (!this->getObject().getType().getPointee().isa<ObjType>()) {
+  if (!isRcOfObject(this->getObject())) {
     inflightErr << "pointee type of object rc is not a lean object.";
     return failure();
   }
@@ -57,6 +67,32 @@ LogicalResult SProjOp::verify() {
   inflightErr.abandon();
   return success();
 }
+
+LogicalResult AppOp::verify() {
+  auto inflightErr = ::mlir::emitError(getLoc(), "invalid lean.app: ");
+  if (!isRcOfObject(this->getFn())) {
+    inflightErr << "pointee type of function rc is not a lean object.";
+    return failure();
+  }
+  if (this->getArgs().size() < 1) {
+    inflightErr << "too few arguments.";
+    return failure();
+  }
+  for (const auto &arg : this->getArgs()) {
+    if (!isRcOfObject(arg)) {
+      inflightErr << "pointee type of argument" << arg
+                  << "is not a lean object.";
+      return failure();
+    }
+  }
+  if (!isRcOfObject(this->getResult())) {
+    inflightErr << "pointee type of result rc is not a lean object.";
+    return failure();
+  }
+  inflightErr.abandon();
+  return success();
+}
+
 void LeanDialect::addOpsImpl() {
   addOperations<
 #define GET_OP_LIST

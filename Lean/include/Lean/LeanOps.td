@@ -58,7 +58,7 @@ def SProjOp : Lean_Op<"sproj"> {
     The object must be a RC pointer to a Lean object.
         
     ```mlir
-    lean.sproj %obj : refcnt.rc<Obj<A, B>>, u8, 0 : index
+    lean.sproj %obj : !refcnt.rc<!lean.obj>, u8, 0 : index
     ```
   }];
   let arguments = (
@@ -68,6 +68,27 @@ def SProjOp : Lean_Op<"sproj"> {
   let results = (outs AnyType:$result);
   let assemblyFormat =
     "$object `:` type($object) `,` type($result) `,` $offset attr-dict";
+  let hasVerifier = 1;
+}
+
+def AppOp : Lean_Op<"app"> {
+  let summary = "apply a Lean function to a list of arguments";
+  let description = [{
+    `lean.app` apply a Lean function to a list of arguments.
+    The function must be a RC pointer to a Lean object.
+    The arguments must be RC pointers to Lean objects.
+    
+    ```mlir
+    %0 = lean.app %fn : !refcnt.rc<!lean.obj>,  (%arg1 %arg2 : !refcnt.rc<!lean.obj> !refcnt.rc<!lean.obj>), !refcnt.rc<!lean.obj>
+    ```
+  }];
+  let arguments = (
+    ins Arg<Refcnt_RcType, "the RC pointer to the Lean function", []>:$fn,
+    Variadic<Refcnt_RcType>:$args
+  );
+  let results = (outs Res<Refcnt_RcType, "the RC pointer to the result", []>:$result);
+  let assemblyFormat =
+    "$fn `:` type($fn) `,` `(` $args `:` type($args) `)` `,` type($result) attr-dict";
   let hasVerifier = 1;
 }
 
