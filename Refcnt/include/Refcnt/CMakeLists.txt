@@ -7,10 +7,4 @@ mlir_tablegen(RefcntOpsDialect.h.inc -gen-dialect-decls)
 mlir_tablegen(RefcntOpsDialect.cpp.inc -gen-dialect-defs)
 add_public_tablegen_target(MLIRRefcntOpsIncGen)
 add_dependencies(mlir-headers MLIRRefcntOpsIncGen)
-add_library(MLIRRefcntTableGen INTERFACE)
-add_dependencies(MLIRRefcntTableGen mlir-headers)
-target_include_directories(MLIRRefcntTableGen
-  INTERFACE
-  ${CMAKE_CURRENT_BINARY_DIR}/..
-)
 message(STATUS "Refcnt IR files will be generated to: ${CMAKE_CURRENT_BINARY_DIR}")

@@ -9,10 +9,4 @@ mlir_tablegen(LeanOpsAttributes.h.inc -gen-attrdef-decls --attrdefs-dialect=lean
 mlir_tablegen(LeanOpsAttributes.cpp.inc -gen-attrdef-defs --attrdefs-dialect=lean)
 add_public_tablegen_target(MLIRLeanOpsIncGen)
 add_dependencies(mlir-headers MLIRLeanOpsIncGen)
-add_library(MLIRLeanTableGen INTERFACE)
-add_dependencies(MLIRLeanTableGen mlir-headers)
-target_include_directories(MLIRLeanTableGen
-  INTERFACE
-  ${CMAKE_CURRENT_BINARY_DIR}/../..
-)
 message(STATUS "Lean IR files will be generated to: ${CMAKE_CURRENT_BINARY_DIR}")

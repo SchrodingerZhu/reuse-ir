@@ -8,4 +8,3 @@ add_mlir_dialect_library(
     LINK_COMPONENTS
         Core
 )
-target_link_libraries(MLIRRefcnt PUBLIC MLIRRefcntTableGen)
