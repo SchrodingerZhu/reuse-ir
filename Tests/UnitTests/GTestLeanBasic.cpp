@@ -103,6 +103,7 @@ SOURCE_PARSE_TEST(GTestLeanBasic, ReverseMap, R"(
       llvm.unreachable
     ^bb_nil:
       refcnt.dec %f : !refcnt.rc<!lean.obj>
+      refcnt.dec %list : !refcnt.rc<!lean.obj>
       return %updated : !refcnt.rc<!lean.obj>
     ^bb_cons:
       %hd = lean.proj %list, 0 : index
