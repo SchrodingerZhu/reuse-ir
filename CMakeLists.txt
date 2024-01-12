@@ -49,6 +49,7 @@ message(STATUS "include dirs for llvm and mlir: ${MLIR_INCLUDE_DIRS};${LLVM_INCL
 include_directories(Lean/include Refcnt/include ${CMAKE_CURRENT_BINARY_DIR}/Lean/include ${CMAKE_CURRENT_BINARY_DIR}/Refcnt/include)
 add_subdirectory(Refcnt)
 add_subdirectory(Lean)
+add_subdirectory(Binaries)
 
 if (REUSE_ANALYSIS_ENABLE_TESTS)
   enable_testing()  

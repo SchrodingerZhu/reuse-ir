@@ -32,6 +32,10 @@ public:
     return this->typedValues;
   }
 
+  const ::llvm::DenseMap<::mlir::Value, TypeTag> &getTypedValues() const {
+    return this->typedValues;
+  }
+
   ChangeResult setTypedValue(::llvm::DenseMap<::mlir::Value, TypeTag> map) {
     if (this->typedValues == map)
       return ChangeResult::NoChange;
