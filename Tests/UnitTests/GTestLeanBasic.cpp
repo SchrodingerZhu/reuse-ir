@@ -6,10 +6,13 @@
 #include <mlir/InitAllDialects.h>
 #include <mlir/Parser/Parser.h>
 
+#include "Lean/Analysis/TypeTagAnalysis.h"
 #include "Lean/IR/LeanOpsDialect.h"
 #include "Refcnt/RefcntOpsDialect.h"
+#include "mlir/Analysis/DataFlow/DeadCodeAnalysis.h"
+#include "llvm/Support/raw_ostream.h"
 
-namespace mlir {
+namespace mlir::lean {
 static std::unique_ptr<MLIRContext> defaultContext() {
   auto context = std::make_unique<MLIRContext>();
   auto registry = DialectRegistry{};
@@ -88,7 +91,7 @@ SOURCE_PARSE_TEST(GTestLeanBasic, ScalarSet, R"(
   }
   )")
 
-SOURCE_PARSE_TEST(GTestLeanBasic, ReverseMap, R"(
+const std::string_view REVERSE_MAP = R"(
   module {
     func.func @rev_map(%f: !refcnt.rc<!lean.obj>, %xs : !refcnt.rc<!lean.obj>, %acc : !refcnt.rc<!lean.obj>) -> !refcnt.rc<!lean.obj> {
       cf.br ^start(%xs, %acc: !refcnt.rc<!lean.obj>, !refcnt.rc<!lean.obj>)
@@ -119,6 +122,31 @@ SOURCE_PARSE_TEST(GTestLeanBasic, ReverseMap, R"(
       cf.br ^start(%tl, %cons: !refcnt.rc<!lean.obj>, !refcnt.rc<!lean.obj>)
     }
   }
-  )")
+  )";
 
-} // namespace mlir
+SOURCE_PARSE_TEST(GTestLeanBasic, ReverseMap, REVERSE_MAP)
+
+TEST(GTestLeanBasic, ReverseTypeTagAnalysis) {
+  auto context = defaultContext();
+  auto module = parseSourceString(REVERSE_MAP, context.get());
+  ScopedDiagnosticHandler error_handler(context.get());
+  DataFlowSolver solver;
+  solver.load<dataflow::DeadCodeAnalysis>();
+  solver.load<dataflow::lean::TypeTagAnalysis>();
+  auto func = &*module.get()->getRegions().front().getOps().begin();
+  ASSERT_TRUE(solver.initializeAndRun(func).succeeded());
+  auto funcOp = dyn_cast<func::FuncOp>(func);
+  auto &region = funcOp.getBody();
+  for (Block &block : region) {
+    auto executable = solver.lookupState<dataflow::Executable>(&block);
+    auto lattice =
+        solver.lookupState<dataflow::lean::TypeTagSemiLattice>(&block);
+    block.dump();
+    if (lattice) {
+      llvm::outs() << "  - executable: " << executable->isLive() << "\n"
+                   << "  - type-tag: " << *lattice << "\n";
+    }
+  }
+}
+
+} // namespace mlir::lean
