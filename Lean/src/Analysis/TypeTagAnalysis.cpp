@@ -8,6 +8,7 @@
 
 #include "Lean/Analysis/TypeTagAnalysis.h"
 #include "Lean/IR/LeanOps.h"
+#include "mlir/Dialect/Func/IR/FuncOps.h"
 
 namespace mlir::dataflow::lean {
 void TypeTagSemiLattice::meet(
@@ -42,10 +43,10 @@ LogicalResult TypeTagAnalysis::visit(ProgramPoint point) {
     visitBlock(block);
   return success();
 }
-LogicalResult TypeTagAnalysis::initialize(Operation *top) {
-  // iterate all blocks
-  for (Region &region : top->getRegions()) {
-    for (Block &block : region) {
+
+void TypeTagAnalysis::initializeRecursively(Operation *current) {
+  if (auto func = llvm::dyn_cast_if_present<func::FuncOp>(current)) {
+    for (Block &block : func.getBody()) {
       auto lattice = getOrCreate<TypeTagSemiLattice>(&block);
       for (auto successor : block.getSuccessors()) {
         // if (!getOrCreateFor<Executable>(
@@ -56,7 +57,17 @@ LogicalResult TypeTagAnalysis::initialize(Operation *top) {
       }
       visitBlock(&block);
     }
+    return;
   }
+  for (auto &region : current->getRegions()) {
+    for (auto &ops : region.getOps()) {
+      initializeRecursively(&ops);
+    }
+  }
+}
+
+LogicalResult TypeTagAnalysis::initialize(Operation *top) {
+  initializeRecursively(top);
   return success();
 }
 

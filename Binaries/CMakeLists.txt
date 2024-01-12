@@ -1,1 +1,2 @@
 add_subdirectory(LeanPlugin)
+add_subdirectory(LeanOpt)

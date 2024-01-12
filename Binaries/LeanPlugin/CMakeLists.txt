@@ -1,7 +1,6 @@
 add_llvm_library(MLIRLeanPlugin 
     MODULE
         Plugin.cpp
-        Passes.cpp
     DEPENDS
         MLIRRefcnt
         MLIRLean

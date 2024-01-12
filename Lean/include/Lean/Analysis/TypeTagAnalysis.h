@@ -55,6 +55,7 @@ public:
 
 private:
   void visitBlock(Block *block);
+  void initializeRecursively(Operation *top);
   std::optional<std::pair<Value, TypeTag>> getGenTypeTag(Block *block);
 };
 
