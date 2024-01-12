@@ -15,5 +15,5 @@ int main(int argc, char **argv) {
   mlir::registerAllDialects(registry);
   registry.insert<mlir::refcnt::RefcntDialect, mlir::lean::LeanDialect>();
   return mlir::asMainReturnCode(
-      mlir::MlirOptMain(argc, argv, "Standalone optimizer driver\n", registry));
+      mlir::MlirOptMain(argc, argv, "Lean optimizer driver\n", registry));
 }
