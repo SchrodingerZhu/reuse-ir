@@ -1,0 +1,15 @@
+add_llvm_library(mlir-lean-plugin 
+    MODULE
+        lean-plugin.cpp
+    DEPENDS
+        MLIRRefcnt
+        MLIRLean
+        MLIRLeanAnalysis
+    PLUGIN_TOOL
+        mlir-opt
+    LINK_LIBS
+        MLIRRefcnt
+        MLIRLean
+        MLIRLeanAnalysis
+        MLIRAnalysis
+)
