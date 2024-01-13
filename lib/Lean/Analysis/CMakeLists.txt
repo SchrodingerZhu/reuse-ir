@@ -1,6 +1,7 @@
 add_mlir_dialect_library(
     MLIRLeanAnalysis
         TypeTagAnalysis.cpp
+        ReusabilityAnalysis.cpp
     DEPENDS
         MLIRLean
     LINK_COMPONENTS
