@@ -5,6 +5,7 @@ add_llvm_library(mlir-lean-plugin
         MLIRRefcnt
         MLIRLean
         MLIRLeanAnalysis
+        MLIRLeanPass
     PLUGIN_TOOL
         mlir-opt
     LINK_LIBS
@@ -12,4 +13,5 @@ add_llvm_library(mlir-lean-plugin
         MLIRLean
         MLIRLeanAnalysis
         MLIRAnalysis
+        MLIRLeanPass
 )

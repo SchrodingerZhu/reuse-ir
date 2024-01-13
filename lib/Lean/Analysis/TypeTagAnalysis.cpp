@@ -10,7 +10,7 @@
 #include "Lean/IR/LeanOps.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
 
-namespace mlir::dataflow::lean {
+namespace mlir::lean {
 void TypeTagSemiLattice::meet(
     ::llvm::DenseMap<::mlir::Value, TypeTag> &lhs,
     const ::llvm::DenseMap<::mlir::Value, TypeTag> &rhs) {
@@ -149,12 +149,4 @@ void TypeTagAnalysis::visitBlock(Block *block) {
 
   propagateIfChanged(lattice, lattice->setTypedValue(std::move(map)));
 }
-RunTypeTagAnalysis::RunTypeTagAnalysis(Operation *op) {
-  solver.load<DeadCodeAnalysis>();
-  solver.load<TypeTagAnalysis>();
-  (void)solver.initializeAndRun(op);
-};
-const TypeTagSemiLattice *RunTypeTagAnalysis::getKnownTypeTags(Block *block) {
-  return solver.lookupState<TypeTagSemiLattice>(block);
-}
-} // namespace mlir::dataflow::lean
+} // namespace mlir::lean

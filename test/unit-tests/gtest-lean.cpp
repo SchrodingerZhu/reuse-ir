@@ -132,15 +132,14 @@ TEST(GTestLeanBasic, ReverseTypeTagAnalysis) {
   ScopedDiagnosticHandler error_handler(context.get());
   DataFlowSolver solver;
   solver.load<dataflow::DeadCodeAnalysis>();
-  solver.load<dataflow::lean::TypeTagAnalysis>();
+  solver.load<lean::TypeTagAnalysis>();
   auto func = &*module.get()->getRegions().front().getOps().begin();
   ASSERT_TRUE(solver.initializeAndRun(func).succeeded());
   auto funcOp = dyn_cast<func::FuncOp>(func);
   auto &region = funcOp.getBody();
   for (Block &block : region) {
     auto executable = solver.lookupState<dataflow::Executable>(&block);
-    auto lattice =
-        solver.lookupState<dataflow::lean::TypeTagSemiLattice>(&block);
+    auto lattice = solver.lookupState<lean::TypeTagSemiLattice>(&block);
     block.dump();
     if (lattice) {
       llvm::outs() << "  - executable: " << executable->isLive() << "\n"

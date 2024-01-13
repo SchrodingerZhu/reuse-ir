@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
-namespace mlir::dataflow::lean {
+namespace mlir::lean {
 
 using TypeTag = std::pair<::std::string, std::size_t>;
 
@@ -58,20 +58,6 @@ private:
   void initializeRecursively(Operation *top);
   std::optional<std::pair<Value, TypeTag>> getGenTypeTag(Block *block);
 };
-
-struct RunTypeTagAnalysis {
-public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(RunTypeTagAnalysis)
-
-  RunTypeTagAnalysis(Operation *op);
-
-  const TypeTagSemiLattice *getKnownTypeTags(Block *block);
-
-private:
-  /// Stores the result of the liveness analysis that was run.
-  DataFlowSolver solver;
-};
-
-} // namespace mlir::dataflow::lean
+} // namespace mlir::lean
 
 #endif // LEAN_TYPE_TAG_ANALYSIS_H

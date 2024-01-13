@@ -8,6 +8,7 @@ set(LIBS
         MLIRLean
         MLIRLeanAnalysis
         MLIRAnalysis
+        MLIRLeanPass
         )
 add_llvm_executable(lean-opt main.cpp)
 
