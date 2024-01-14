@@ -1,6 +1,7 @@
 add_mlir_dialect_library(
     MLIRLeanPass
         TestTypeTagAnalysis.cpp
+        TestReusabilityAnalysis.cpp
     DEPENDS
         MLIRLeanAnalysis 
     LINK_COMPONENTS

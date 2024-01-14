@@ -1,0 +1,11 @@
+add_mlir_dialect_library(
+    MLIRRefcntAnalysis
+      ReuseAnalysis.cpp
+    DEPENDS
+      MLIRRefcnt
+    LINK_COMPONENTS
+      Core
+    LINK_LIBS
+      MLIRRefcnt
+      MLIRRefcntUtilities
+)

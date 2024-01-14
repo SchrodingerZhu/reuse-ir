@@ -6,6 +6,7 @@
 #include <mlir/Tools/Plugins/DialectPlugin.h>
 
 #include <Lean/IR/LeanOpsDialect.h>
+#include <Lean/Pass/TestReusabilityAnalysis.h>
 #include <Lean/Pass/TestTypeTagAnalysis.h>
 #include <Refcnt/IR/RefcntOpsDialect.h>
 
@@ -16,6 +17,7 @@ mlirGetDialectPluginInfo() {
             registry->insert<mlir::refcnt::RefcntDialect>();
             registry->insert<mlir::lean::LeanDialect>();
             mlir::PassRegistration<mlir::lean::TestTypeTagAnalysisPass>();
+            mlir::PassRegistration<mlir::lean::TestReusabilityAnalysisPass>();
           }};
 }
 
@@ -23,5 +25,6 @@ extern "C" LLVM_ATTRIBUTE_WEAK mlir::PassPluginLibraryInfo
 mlirGetPassPluginInfo() {
   return {MLIR_PLUGIN_API_VERSION, "LeanPasses", LLVM_VERSION_STRING, []() {
             mlir::PassRegistration<mlir::lean::TestTypeTagAnalysisPass>();
+            mlir::PassRegistration<mlir::lean::TestReusabilityAnalysisPass>();
           }};
 }

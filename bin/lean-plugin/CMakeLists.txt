@@ -3,6 +3,7 @@ add_llvm_library(mlir-lean-plugin
         lean-plugin.cpp
     DEPENDS
         MLIRRefcnt
+        MLIRRefcntAnalysis
         MLIRLean
         MLIRLeanAnalysis
         MLIRLeanPass
@@ -10,6 +11,7 @@ add_llvm_library(mlir-lean-plugin
         mlir-opt
     LINK_LIBS
         MLIRRefcnt
+        MLIRRefcntAnalysis
         MLIRLean
         MLIRLeanAnalysis
         MLIRAnalysis

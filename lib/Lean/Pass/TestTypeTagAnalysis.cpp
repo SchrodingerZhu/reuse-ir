@@ -25,11 +25,10 @@ void TestTypeTagAnalysisPass::printAnalysisResults(DataFlowSolver &solver,
       for (Block &block : region) {
         os << "  ";
         block.printAsOperand(os);
-        os << " = ";
+        os << " = {";
         auto *type_tag = solver.lookupState<lean::TypeTagSemiLattice>(&block);
         if (type_tag) {
           AsmState asmState(op);
-          os << "{ ";
           for (auto &pair : type_tag->getTypedValues()) {
             pair.getFirst().printAsOperand(os, asmState);
             os << " = " << pair.getSecond().first << "("

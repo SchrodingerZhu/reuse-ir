@@ -5,6 +5,7 @@ set(LIBS
         ${conversion_libs}
         MLIROptLib
         MLIRRefcnt
+        MLIRRefcntAnalysis
         MLIRLean
         MLIRLeanAnalysis
         MLIRAnalysis
