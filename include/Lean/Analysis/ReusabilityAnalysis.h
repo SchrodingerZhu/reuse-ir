@@ -44,6 +44,7 @@ private:
   llvm::SmallVector<size_t, 4> reusableScalars;
 };
 
+// TODO: rework this as a dataflow analysis.
 class ReusabilityAnalysis {
 public:
   ReusabilityAnalysis(Operation *op);
