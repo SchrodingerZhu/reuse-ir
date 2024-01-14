@@ -12,7 +12,7 @@ class Reusable {
 public:
   /// Return reusibility estimation of current value.
   /// Negative value means that current value is not reusable.
-  virtual size_t reusibility() const = 0;
+  virtual size_t reusability() const = 0;
   virtual void dump(llvm::raw_ostream &os, AsmState &) const;
   virtual ~Reusable() = default;
   const Value &getValue() const { return value; }
@@ -25,16 +25,16 @@ private:
   Value value;
 };
 
-struct ReusibilityComparator {
+struct ReusabilityComparator {
   bool operator()(const std::unique_ptr<Reusable> &lhs,
                   const std::unique_ptr<Reusable> &rhs) const {
-    return lhs->reusibility() > rhs->reusibility();
+    return lhs->reusability() > rhs->reusability();
   }
 };
 
 class ReusabibilityLookupTable
     : public llvm::DenseMap<Value, refcnt::OrderedSet<std::unique_ptr<Reusable>,
-                                                      ReusibilityComparator>> {
+                                                      ReusabilityComparator>> {
 public:
   Reusable *getMostPreferredReusable(Value value) const;
 };

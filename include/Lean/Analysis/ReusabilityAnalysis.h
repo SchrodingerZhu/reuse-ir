@@ -20,7 +20,7 @@ public:
   static bool classof(const refcnt::Reusable *obj) {
     return obj->getKind() == resolveTypeID();
   }
-  size_t reusibility() const override {
+  size_t reusability() const override {
     return reusableObjs.size() * OBJECT_SIMILARITY_SCORE +
            reusableScalars.size() * SCALAR_SIMILARITY_SCORE;
   }

@@ -10,6 +10,6 @@ ReusabibilityLookupTable::getMostPreferredReusable(Value value) const {
 void Reusable::dump(llvm::raw_ostream &os, AsmState &st) const {
   os << "[";
   value.printAsOperand(os, st);
-  os << ", score: " << reusibility() << "]";
+  os << ", score: " << reusability() << "]";
 };
 } // namespace mlir::refcnt
