@@ -37,12 +37,15 @@ struct ReusabilityComparator {
 };
 
 class ReusabibilityLookupTable
-    : public llvm::DenseMap<Value, refcnt::OrderedSet<std::unique_ptr<Reusable>,
-                                                      ReusabilityComparator>> {
+    : public AnalysisState,
+      public refcnt::OrderedSet<std::unique_ptr<Reusable>,
+                                ReusabilityComparator> {
 public:
-  Reusable *getMostPreferredReusable(Value value) const;
+  Reusable *getMostPreferredReusable() const;
+  void print(llvm::raw_ostream &os) const override;
 };
 
+/*
 class ReuseToken {
 public:
   enum class Kind {
@@ -109,6 +112,7 @@ public:
 private:
   Value value;
 };
+*/
 
 } // namespace mlir::refcnt
 #endif // REFCNT_ANALYSIS_REUSE_ANALYSIS_H

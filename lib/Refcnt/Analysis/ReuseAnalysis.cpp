@@ -1,17 +1,17 @@
 #include "Refcnt/Analysis/ReuseAnalysis.h"
 namespace mlir::refcnt {
-Reusable *
-ReusabibilityLookupTable::getMostPreferredReusable(Value value) const {
-  auto it = find(value);
-  if (it == end() || it->second.empty())
+Reusable *ReusabibilityLookupTable::getMostPreferredReusable() const {
+  if (this->empty()) {
     return nullptr;
-  return it->second.begin()->get();
+  }
+  return this->begin()->get();
 }
 void Reusable::dump(llvm::raw_ostream &os, AsmState &st) const {
   os << "[";
   value.printAsOperand(os, st);
   os << ", score: " << reusability() << "]";
 };
+/*
 void ReuseTokenCollection::print(llvm::raw_ostream &os) const {
   os << "{";
   llvm::interleaveComma(*this, os, [&](auto token) {
@@ -44,4 +44,12 @@ double ConditonalReuseToken::getReuseProbability(DataFlowSolver &solver) const {
   // TODO: also consider branch probability.
   return static_cast<double>(valid) / static_cast<double>(total);
 }
+void ReusabibilityLookupTable::print(llvm::raw_ostream &os) const {
+  os << "{";
+  llvm::interleaveComma(*this, os, [&](auto &reusable) {
+    reusable->dump(os, AsmState(reusable->getValue().getDefiningOp()));
+  });
+  os << "}";
+}
+*/
 } // namespace mlir::refcnt

@@ -2,11 +2,12 @@
 #define LEAN_ANALYSIS_REUSABILITY_ANALYSIS_H
 #include <llvm/ADT/SmallVector.h>
 #include <mlir/Analysis/DataFlowFramework.h>
+#include <mlir/IR/Operation.h>
 #include <mlir/IR/Value.h>
+#include <mlir/Support/LogicalResult.h>
 
 #include "Refcnt/Analysis/ReuseAnalysis.h"
 #include "Refcnt/IR/RefcntOps.h"
-#include "mlir/IR/Operation.h"
 
 namespace mlir::lean {
 
@@ -44,20 +45,16 @@ private:
   llvm::SmallVector<size_t, 4> reusableScalars;
 };
 
-// TODO: rework this as a dataflow analysis.
-class ReusabilityAnalysis {
+class ReusabilityAnalysis : DataFlowAnalysis {
 public:
   ReusabilityAnalysis(Operation *op);
-  refcnt::ReusabibilityLookupTable &getReusabilityTable() {
-    return reusabilityTable;
-  }
-  const refcnt::ReusabibilityLookupTable &getReusabilityTable() const {
-    return reusabilityTable;
-  }
+  /// visit is no-op since we are supposed to finish the analysis in
+  /// initialization
+  LogicalResult visit(ProgramPoint point) override { return success(); }
+  /// Initialize the analysis
+  LogicalResult initialize(Operation *top) override;
 
 private:
-  refcnt::ReusabibilityLookupTable reusabilityTable;
-  DataFlowSolver solver;
   void visitNewOp(refcnt::NewOp newOp);
   void analyzeRecursively(Operation *op);
 };
