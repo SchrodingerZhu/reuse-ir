@@ -44,12 +44,14 @@ double ConditonalReuseToken::getReuseProbability(DataFlowSolver &solver) const {
   // TODO: also consider branch probability.
   return static_cast<double>(valid) / static_cast<double>(total);
 }
+*/
 void ReusabibilityLookupTable::print(llvm::raw_ostream &os) const {
   os << "{";
   llvm::interleaveComma(*this, os, [&](auto &reusable) {
-    reusable->dump(os, AsmState(reusable->getValue().getDefiningOp()));
+    auto state = AsmState(reusable->getValue().getDefiningOp());
+    reusable->dump(os, state);
   });
   os << "}";
 }
-*/
+
 } // namespace mlir::refcnt

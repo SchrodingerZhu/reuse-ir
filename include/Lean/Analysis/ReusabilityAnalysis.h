@@ -45,12 +45,12 @@ private:
   llvm::SmallVector<size_t, 4> reusableScalars;
 };
 
-class ReusabilityAnalysis : DataFlowAnalysis {
+class ReusabilityAnalysis : public DataFlowAnalysis {
 public:
-  ReusabilityAnalysis(Operation *op);
+  using DataFlowAnalysis::DataFlowAnalysis;
   /// visit is no-op since we are supposed to finish the analysis in
   /// initialization
-  LogicalResult visit(ProgramPoint point) override { return success(); }
+  LogicalResult visit(ProgramPoint point) override;
   /// Initialize the analysis
   LogicalResult initialize(Operation *top) override;
 

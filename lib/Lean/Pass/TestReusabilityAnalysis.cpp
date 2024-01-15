@@ -1,14 +1,20 @@
 #include "Lean/Pass/TestReusabilityAnalysis.h"
 #include "Lean/Analysis/ReusabilityAnalysis.h"
+#include "Lean/Analysis/TypeTagAnalysis.h"
 #include "Refcnt/IR/RefcntOps.h"
+#include "mlir/Analysis/DataFlowFramework.h"
 namespace mlir::lean {
 void TestReusabilityAnalysisPass::runOnOperation() {
   Operation *op = getOperation();
-  ReusabilityAnalysis analysis(op);
-  printAnalysisResults(llvm::errs(), op, analysis);
+  DataFlowSolver solver;
+  solver.load<TypeTagAnalysis>();
+  solver.load<ReusabilityAnalysis>();
+  (void)solver.initializeAndRun(op);
+  printAnalysisResults(llvm::errs(), op, solver);
 }
-void TestReusabilityAnalysisPass::printAnalysisResults(
-    raw_ostream &os, Operation *op, const ReusabilityAnalysis &analysis) {
+void TestReusabilityAnalysisPass::printAnalysisResults(raw_ostream &os,
+                                                       Operation *op,
+                                                       DataFlowSolver &solver) {
   op->walk([&](Operation *op) {
     auto asmState = AsmState(op);
     auto tag = op->getAttrOfType<StringAttr>("tag");
@@ -24,15 +30,15 @@ void TestReusabilityAnalysisPass::printAnalysisResults(
         for (auto &op : block.getOperations()) {
           if (auto newOp = dyn_cast<refcnt::NewOp>(op)) {
             auto res = newOp.getResult();
-            auto analysisResult = analysis.getReusabilityTable().find(res);
-            if (analysisResult != analysis.getReusabilityTable().end()) {
+            auto analysisResult =
+                solver.lookupState<refcnt::ReusabibilityLookupTable>(newOp);
+            if (analysisResult) {
               os << "  ";
-              analysisResult->first.printAsOperand(os, asmState);
+              res.printAsOperand(os, asmState);
               os << " = {";
-              for (auto &reusable : analysisResult->second) {
+              llvm::interleaveComma(*analysisResult, os, [&](auto &reusable) {
                 reusable->dump(os, asmState);
-                os << " ";
-              }
+              });
               os << "}\n";
             }
           }

@@ -2,16 +2,11 @@
 #include "Lean/Analysis/TypeTagAnalysis.h"
 #include "Lean/IR/LeanOps.h"
 #include "Lean/IR/LeanOpsTypes.h"
+#include "mlir/Support/LogicalResult.h"
 #include <llvm/Support/Casting.h>
 #include <mlir/Dialect/Func/IR/FuncOps.h>
 
 namespace mlir::lean {
-ReusabilityAnalysis::ReusabilityAnalysis(Operation *op)
-    : reusabilityTable(), solver() {
-  solver.load<TypeTagAnalysis>();
-  (void)solver.initializeAndRun(op);
-  analyzeRecursively(op);
-};
 
 void ReusabilityAnalysis::analyzeRecursively(Operation *current) {
   if (auto func = llvm::dyn_cast_if_present<mlir::func::FuncOp>(current)) {
@@ -31,6 +26,11 @@ void ReusabilityAnalysis::analyzeRecursively(Operation *current) {
   }
 }
 
+LogicalResult ReusabilityAnalysis::initialize(Operation *op) {
+  analyzeRecursively(op);
+  return success();
+}
+
 void ReusabilityAnalysis::visitNewOp(refcnt::NewOp newOp) {
   // if new operation is not allocating an object, we cannot
   // perform reusability analysis
@@ -48,10 +48,7 @@ void ReusabilityAnalysis::visitNewOp(refcnt::NewOp newOp) {
   auto leanTag = rawLeanTag.getUInt();
 
   auto block = newOp->getBlock();
-  const auto *typeTags = solver.lookupState<TypeTagSemiLattice>(block);
-  if (!typeTags)
-    return;
-
+  const auto *typeTags = getOrCreate<TypeTagSemiLattice>(block);
   auto resultValue = newOp.getResult();
   auto canAnalyzeFieldReuse = true;
   llvm::DenseMap<uint64_t, Value> objFields;
@@ -108,8 +105,12 @@ void ReusabilityAnalysis::visitNewOp(refcnt::NewOp newOp) {
         }
       }
     }
-    reusabilityTable[resultValue].insert(std::make_unique<ReusableObject>(
+    auto opTable = getOrCreate<refcnt::ReusabibilityLookupTable>(newOp);
+    opTable->insert(std::make_unique<ReusableObject>(
         value, std::move(reusableObjs), std::move(reusableScalars)));
   }
+}
+LogicalResult ReusabilityAnalysis::visit(ProgramPoint point) {
+  return success();
 }
 } // namespace mlir::lean

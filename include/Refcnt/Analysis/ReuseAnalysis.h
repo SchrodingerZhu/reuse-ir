@@ -41,6 +41,7 @@ class ReusabibilityLookupTable
       public refcnt::OrderedSet<std::unique_ptr<Reusable>,
                                 ReusabilityComparator> {
 public:
+  using AnalysisState::AnalysisState;
   Reusable *getMostPreferredReusable() const;
   void print(llvm::raw_ostream &os) const override;
 };
